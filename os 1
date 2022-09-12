@@ -1,0 +1,16 @@
+ def put(self, val):
+        self.open.acquire()
+        with self.write_lock:
+            index = self.write_index
+            self.write_index = (self.write_index + 1) % len(self.buff)
+        self.buff[index] = val
+        self.closed.release()
+
+    def get(self):
+        self.closed.acquire()
+        with self.read_lock:
+            index = self.read_index
+            self.read_index = (self.read_index + 1) % len(self.buff)
+        val = self.buff[index]
+        self.open.release()
+        return val
